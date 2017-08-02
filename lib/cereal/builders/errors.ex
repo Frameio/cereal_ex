@@ -1,4 +1,5 @@
 defmodule Cereal.Builders.Errors do
+  @type t :: %__MODULE__{}
   defstruct [:title, :status, :errors]
 
   alias Cereal.Builders.Error

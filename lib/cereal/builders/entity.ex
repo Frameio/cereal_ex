@@ -1,4 +1,5 @@
 defmodule Cereal.Builders.Entity do
+  @type t :: %__MODULE__{}
   defstruct [:id, :type, :attributes, {:rels, %{}}]
 
   def build(%{data: data} = context) when is_list(data) do

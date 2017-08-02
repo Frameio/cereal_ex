@@ -1,7 +1,8 @@
 defmodule Cereal.Builders.Base do
   alias Cereal.Utils
-  alias Cereal.Builders.{Entity, Base}
+  alias Cereal.Builders.{Entity}
 
+  @type t :: %__MODULE__{}
   defstruct [:data, :page, :metadata]
 
   @doc """
@@ -9,7 +10,7 @@ defmodule Cereal.Builders.Base do
 
   Will correctly handle Scrievener pagination.
   """
-  @spec build(Cereal.Context.t) :: Base.t
+  @spec build(Cereal.Context.t) :: __MODULE__.t
   def build(context)
   if Code.ensure_loaded?(Scrivener) do
     def build(%{data: %Scrivener.Page{} = page, opts: opts} = context) do
@@ -22,7 +23,7 @@ defmodule Cereal.Builders.Base do
     data    = serializer.preload(data, context.conn, Map.get(opts, :include, []))
     context = %{context | data: data, opts: opts}
 
-    struct(Base, %{})
+    struct(__MODULE__, %{})
     |> Map.put(:data, Entity.build(context))
     |> Map.put(:metadata, build_metadata(context))
     |> Map.put(:page, build_page(context))

@@ -1,4 +1,5 @@
 defmodule Cereal.Builders.Error do
+  @type t :: %__MODULE__{}
   defstruct [:title, :code, :detail, :source, {:meta, %{}}]
 
   def build(%{data: %Ecto.Changeset{}} = context), do: build_errors_from_changeset(context)
