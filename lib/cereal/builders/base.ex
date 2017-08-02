@@ -1,6 +1,6 @@
 defmodule Cereal.Builders.Base do
   alias Cereal.Utils
-  alias Cereal.Builders.{Entity}
+  alias Cereal.Builders.{Entity, Base}
 
   defstruct [:data, :page, :metadata]
 
