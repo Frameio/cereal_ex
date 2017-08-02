@@ -18,7 +18,7 @@ defmodule Cereal.Builders.Base do
     end
   end
   def build(%{serializer: serializer, data: data, opts: opts} = context) do
-    data    = serializer.preload(data)
+    data    = serializer.preload(data, context.conn, Map.get(opts, :include, []))
     opts    = normalize_opts(opts)
     context = %{context | data: data, opts: opts}
 

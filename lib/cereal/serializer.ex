@@ -90,9 +90,8 @@ defmodule Cereal.Serializer do
 
   defp define_default_preload do
     quote do
-      def preload(data), do: preload(data, [])
-      def preload(data, _include_opts), do: data
-      defoverridable [preload: 1, preload: 2]
+      def preload(data, conn, _include_opts), do: data
+      defoverridable [preload: 3]
     end
   end
 
