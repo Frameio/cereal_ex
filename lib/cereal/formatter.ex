@@ -13,7 +13,7 @@ defmodule Cereal.Formatter do
   def format(base), do: apply(formatter(base), :format, [base])
 
   defp formatter(%Cereal.Builders.Base{}),
-    do: Application.get_env(:cereal, :formatter, Cereal.Formatter.Attributes)
+    do: Application.get_env(:cereal, :formatter, Cereal.Formatters.Attributes)
   defp formatter(%Cereal.Builders.Errors{}),
-    do: Application.get_env(:cereal, :error_formatter, Cereal.Formatter.Errors)
+    do: Application.get_env(:cereal, :error_formatter, Cereal.Formatters.Errors)
 end
