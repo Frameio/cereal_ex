@@ -51,8 +51,8 @@ defmodule Cereal.Serializer do
 
   defp define_default_id do
     quote do
-      def id(data), do: Map.get(data, :id)
-      defoverridable [id: 1]
+      def id(data, _conn), do: Map.get(data, :id)
+      defoverridable [id: 2]
     end
   end
 
@@ -61,19 +61,19 @@ defmodule Cereal.Serializer do
 
     quote do
       def type(), do: unquote(type_for_module)
-      def type(_), do: type()
-      defoverridable [type: 1]
+      def type(_, _), do: type()
+      defoverridable [type: 2]
     end
   end
 
   defp define_default_attributes do
     quote do
-      def attributes(struct) do
+      def attributes(struct, _conn) do
         __MODULE__.__attributes()
         |> Enum.map(&({&1, apply(__MODULE__, &1, [struct])}))
         |> Enum.into(%{})
       end
-      defoverridable [attributes: 1]
+      defoverridable [attributes: 2]
     end
   end
 

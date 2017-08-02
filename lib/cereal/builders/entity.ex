@@ -11,15 +11,15 @@ defmodule Cereal.Builders.Entity do
 
   def build(%{serializer: serializer} = context) do
     %__MODULE__{
-      id: serializer.id(context.data),
-      type: serializer.type(context.data),
+      id: serializer.id(context.data, context.conn),
+      type: serializer.type(context.data, context.conn),
       attributes: attributes(context),
       rels: relationships(context),
     }
   end
 
   defp attributes(%{serializer: serializer} = context) do
-    serializer.attributes(context.data)
+    serializer.attributes(context.data, context.conn)
     |> filter_attributes(context)
   end
 
@@ -68,7 +68,7 @@ defmodule Cereal.Builders.Entity do
   defp should_include_relation?(_, _, _), do: true
 
   defp filter_attributes(attrs, %{serializer: serializer, opts: %{fields: fields}} = context) when is_list(fields) do
-    type = serializer.type(context.data) |> String.to_atom()
+    type = serializer.type(context.data, context.conn) |> String.to_atom()
     do_filter_attributes(attrs, fields[type])
   end
   defp filter_attributes(attrs, _), do: attrs

@@ -28,7 +28,7 @@ defmodule Cereal.Builders.EntityTest do
     attributes [:text]
     has_one :user, serializer: UserSerializer, include: false
 
-    def type(_), do: "comment"
+    def type(_, _), do: "comment"
   end
 
   describe "#build/1" do
