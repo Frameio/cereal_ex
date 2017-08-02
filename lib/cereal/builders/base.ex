@@ -14,7 +14,7 @@ defmodule Cereal.Builders.Base do
   def build(context)
   if Code.ensure_loaded?(Scrivener) do
     def build(%{data: %Scrivener.Page{} = page, opts: opts} = context) do
-      opts = opts |> normalize_opts() |> Map.put(:page, to_page_options(page))
+      opts = opts |> Enum.into(%{}) |> Map.put(:page, to_page_options(page))
       build(%{context | data: page.entries, opts: opts})
     end
   end
@@ -33,7 +33,7 @@ defmodule Cereal.Builders.Base do
   defp build_metadata(%{opts: opts}), do: Map.get(opts, :metadata)
 
   defp normalize_opts(opts) when is_list(opts), do: opts |> Enum.into(%{}) |> normalize_opts()
-  defp normalize_opts(%{include: include} = opts),
+  defp normalize_opts(%{include: include} = opts) when is_binary(include),
     do: normalize_opts(%{opts | include: Utils.normalize_includes(include)})
   defp normalize_opts(opts), do: opts
 

@@ -12,7 +12,7 @@ defmodule Cereal.UtilsTest do
     end
 
     test "will normalize multiple includes" do
-      includes = "account,user"
+      includes = "account,user,subscriptions"
       expected = [user: [], account: []]
 
       assert Utils.normalize_includes(includes) == expected
