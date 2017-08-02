@@ -13,6 +13,7 @@ defmodule Cereal.Formatters.Attributes do
 
   defp format_relations(relations) do
     relations
+    |> Enum.filter(fn {name, rel_or_rels} -> rel_or_rels == nil end)
     |> Enum.map(fn {name, rel_or_rels} -> {name, format_data(rel_or_rels)} end)
     |> Enum.into(%{})
   end
