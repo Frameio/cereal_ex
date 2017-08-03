@@ -7,7 +7,7 @@ defmodule Cereal.Builders.EntityTest do
   defmodule UserSerializer do
     use Cereal.Serializer
     attributes [:name, :not_an_attr]
-    def not_an_attr(_), do: true
+    def not_an_attr(_, _), do: true
   end
 
   defmodule CommentSerializer do

@@ -12,6 +12,7 @@ defmodule Cereal.Formatters.ErrorsTest do
         code: 422,
         errors: [%{
           code: :required,
+          title: "is required",
           field: "title",
           detail: "title is required"
         }]
