@@ -2,6 +2,8 @@ defmodule Cereal.PhoenixView do
   defmacro __using__(_) do
     module = __CALLER__.module
     quote do
+      use Cereal.Serializer
+
       def render("index.json" <> _, data) do
         Cereal.PhoenixView.render(unquote(module), data)
       end
@@ -11,7 +13,7 @@ defmodule Cereal.PhoenixView do
       end
 
       def render("errors.json" <> _, data) do
-        Cereal.PhoenixView.render_errors(data)
+        Cereal.PhoenixView.render_errors(unquote(module), data)
       end
     end
   end
