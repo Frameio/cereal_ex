@@ -62,10 +62,10 @@ defmodule Cereal.Builders.Entity do
   # We include the option when the following is true:
   # 1) The relation options have `include: true`
   # 2) The `include` option is passed in and includes the resource
-  defp should_include_relation?(%{include: nil}, _, %{include: true}), do: true
+  defp should_include_relation?(_, _, %{include: true}), do: true
   defp should_include_relation?(%{include: included}, name, _) when is_list(included),
     do: included[name] |> is_list()
-  defp should_include_relation?(_, _, %{include: include}), do: include
+  defp should_include_relation?(_, _, %{include: false}), do: false
   defp should_include_relation?(_, _, _), do: true
 
   defp filter_attributes(attrs, %{serializer: serializer, opts: %{fields: fields}} = context) when is_list(fields) do
