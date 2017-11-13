@@ -70,15 +70,21 @@ defmodule Cereal.Builders.Entity do
 
   defp filter_attributes(attrs, %{serializer: serializer, opts: %{fields: fields}} = context) when is_list(fields) do
     type = serializer.type(context.data, context.conn) |> String.to_atom()
-    do_filter_attributes(attrs, fields[type])
+    do_filter_attributes(attrs, {:take, fields[type]})
+  end
+  defp filter_attributes(attrs, %{serializer: serializer, opts: %{excludes: fields}} = context) when is_list(fields) do
+    type = serializer.type(context.data, context.conn) |> String.to_atom()
+    do_filter_attributes(attrs, {:drop, fields[type]})
   end
   defp filter_attributes(attrs, _), do: attrs
 
   defp do_filter_attributes(attrs, nil), do: attrs
-  defp do_filter_attributes(attrs, fields) when is_list(fields),
+  defp do_filter_attributes(attrs, {:take, fields}) when is_list(fields),
     do: Map.take(attrs, fields)
-  defp do_filter_attributes(attrs, fields) when is_binary(fields) do
+  defp do_filter_attributes(attrs, {:drop, fields}) when is_list(fields),
+    do: Map.drop(attrs, fields)
+  defp do_filter_attributes(attrs, {action, fields}) when is_binary(fields) do
     fields = fields |> String.split(",") |> Enum.map(&String.to_atom/1)
-    do_filter_attributes(attrs, fields)
+    do_filter_attributes(attrs, {action, fields})
   end
 end
