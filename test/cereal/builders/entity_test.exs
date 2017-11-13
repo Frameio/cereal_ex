@@ -112,6 +112,15 @@ defmodule Cereal.Builders.EntityTest do
       assert Entity.build(context) == expected
     end
 
+    test "it will conditionally drop excluded fields", %{context: context} do
+      data     = %TestModel.User{id: 1, name: "Dummy"}
+      opts     = %{excludes: [user: "name"]}
+      context  = %{context | data: data, serializer: UserSerializer, opts: opts}
+      expected = %Entity{id: 1, type: "user", attributes: %{not_an_attr: true}}
+
+      assert Entity.build(context) == expected
+    end
+
     test "it will build a deeply nested entity", %{context: context} do
       user = %TestModel.User{id: 1, name: "Johnny User"}
       comments = [%TestModel.Comment{id: 1, user: user, text: "A comment"}]
