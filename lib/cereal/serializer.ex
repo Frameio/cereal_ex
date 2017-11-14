@@ -70,7 +70,7 @@ defmodule Cereal.Serializer do
     quote do
       def attributes(struct, conn) do
         __MODULE__.__attributes()
-        |> Enum.map(&({&1, apply(__MODULE__, &1, [struct, conn])}))
+        |> Enum.map(& {&1, fn struct, conn -> apply(__MODULE__, &1, [struct, conn]) end})
         |> Enum.into(%{})
       end
       defoverridable [attributes: 2]
@@ -100,18 +100,7 @@ defmodule Cereal.Serializer do
       @attributes @attributes ++ attrs
 
       for attr <- attrs do
-        has_function? = :erlang.function_exported(__MODULE__, attr, 2)
-
-        def unquote(attr)(m, c) do
-          # For each attribute, see if there is a function exported on the
-          # module with a /1 arity, otherwise fallback to grabbing from the
-          # entity passed in.
-          unquote(has_function?)
-          |> case do
-            true  -> apply(__MODULE__, unquote(attr), [m, c])
-            false -> Map.get(m, unquote(attr))
-          end
-        end
+        def unquote(attr)(m, _), do: Map.get(m, unquote(attr))
         defoverridable [{attr, 2}]
       end
     end
