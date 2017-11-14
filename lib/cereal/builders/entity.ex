@@ -21,6 +21,8 @@ defmodule Cereal.Builders.Entity do
 
   defp attributes(%{serializer: serializer} = context) do
     serializer.attributes(context.data, context.conn)
+    |> Enum.map(fn {key, fnc} -> {key, fnc.(context.data, context.conn)} end)
+    |> Enum.into(%{})
     |> filter_attributes(context)
   end
 
@@ -48,7 +50,7 @@ defmodule Cereal.Builders.Entity do
 
   defp build_relation_entity(nil, _, _, _), do: nil
   defp build_relation_entity(relation, context, name, rel_opts) do
-    context
+    context 
     |> Map.put(:serializer, rel_opts.serializer)
     |> Map.put(:opts, with_relationship_includes(context.opts, name))
     |> Map.put(:data, relation)
