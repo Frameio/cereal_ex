@@ -6,7 +6,7 @@ defmodule TestModel.Article do
 end
 
 defmodule TestModel.User do
-  defstruct [:id, :name]
+  defstruct [:id, {:name, "a name"}]
 end
 
 defmodule TestModel.Comment do

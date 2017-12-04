@@ -31,6 +31,12 @@ defmodule Cereal.Builders.EntityTest do
     def type(_, _), do: "comment"
   end
 
+  defmodule DefaultCommentRelationSerializer do
+    use Cereal.Serializer
+    attributes [:text]
+    has_one :author, serializer: UserSerializer, default: TestModel.User, include: true 
+  end
+
   describe "#build/1" do
     setup [:setup_context]
 
@@ -70,6 +76,13 @@ defmodule Cereal.Builders.EntityTest do
       expected = %Entity{id: 1, type: "comment", attributes: %{text: "A comment"}, rels: %{user: nil}}
 
       assert Entity.build(context) == expected
+    end
+
+    test "it will build an entity with a default relatoin", %{context: context} do
+      data = %TestModel.Comment{id: 1, text: "A comment"}
+      context = %{context | data: data, serializer: DefaultCommentRelationSerializer}
+
+      assert Entity.build(context).rels.author.attributes.name == "a name"
     end
 
     test "it will raise when trying to serialize a relation that returns an Ecto.Association.NotLoaded struct", %{context: context} do

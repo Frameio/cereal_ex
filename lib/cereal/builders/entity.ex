@@ -48,6 +48,8 @@ defmodule Cereal.Builders.Entity do
     |> build_relation_entity(context, name, rel_opts)
   end
 
+  defp build_relation_entity(nil, ctx, name, %{default: default} = opts), 
+    do: struct(default) |> build_relation_entity(ctx, name, opts)
   defp build_relation_entity(nil, _, _, _), do: nil
   defp build_relation_entity(relation, context, name, rel_opts) do
     context 
