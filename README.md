@@ -9,4 +9,4 @@ in whichever way you wish.
 * Customizable JSON serializer for entities and for errors
 * Sparse fieldset support
 * Dynamic include support
-* `:has_one` and `:has_many` relationships for your entities
+* `:has_one`, `:has_many`, `:embeds_one` relationships for your entities
