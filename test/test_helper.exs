@@ -12,3 +12,7 @@ end
 defmodule TestModel.Comment do
   defstruct [:id, :user, :text]
 end
+
+defmodule TestModel.Post do
+  defstruct [:id, :text, :comment]
+end
