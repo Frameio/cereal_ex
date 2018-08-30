@@ -29,7 +29,7 @@ defmodule Cereal.Serializer do
       @relations []
 
       import Cereal.Serializer, only: [
-        attributes: 1, has_many: 2, has_one: 2
+        attributes: 1, has_many: 2, has_one: 2, embeds_one: 2
       ]
 
       unquote(define_default_id())
@@ -103,6 +103,17 @@ defmodule Cereal.Serializer do
         def unquote(attr)(m, _), do: Map.get(m, unquote(attr))
         defoverridable [{attr, 2}]
       end
+    end
+  end
+
+  defmacro embeds_one(name, [serializer: serializer] = _opts) do
+    quote do
+      @attributes [unquote(name) | @attributes]
+      def unquote(name)(%{unquote(name) => nil}, _), do: nil
+      def unquote(name)(%{unquote(name) => model}, conn) do
+        Cereal.serialize(unquote(serializer), model, conn)
+      end
+      defoverridable [{unquote(name), 2}]
     end
   end
 

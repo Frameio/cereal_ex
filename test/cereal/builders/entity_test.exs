@@ -31,6 +31,19 @@ defmodule Cereal.Builders.EntityTest do
     def type(_, _), do: "comment"
   end
 
+  defmodule DefaultCommentRelationSerializer do
+    use Cereal.Serializer
+    attributes [:text]
+    has_one :author, serializer: UserSerializer, default: TestModel.User, include: true 
+  end
+
+  defmodule EmbedSerializer do
+    use Cereal.Serializer
+    attributes [:text]
+
+    embeds_one :comment, serializer: CommentSerializer
+  end
+
   describe "#build/1" do
     setup [:setup_context]
 
@@ -117,6 +130,42 @@ defmodule Cereal.Builders.EntityTest do
       opts     = %{excludes: [user: "name"]}
       context  = %{context | data: data, serializer: UserSerializer, opts: opts}
       expected = %Entity{id: 1, type: "user", attributes: %{not_an_attr: true}}
+
+      assert Entity.build(context) == expected
+    end
+
+    test "It will serialize embeds", %{context: context} do
+      data = %TestModel.Post{
+        id: 3,
+        text: "some_text",
+        comment: %TestModel.Comment{
+          id: 2,
+          text: "a comment",
+          user: %TestModel.User{
+            id: 1,
+            name: "Dummy"
+          }
+        }
+      }
+      context  = %{context | data: data, serializer: EmbedSerializer, opts: []}
+      expected = %Entity{
+        id: 3, 
+        type: "embed", 
+        attributes: %{
+          text: "some_text", 
+          comment: %{
+            id: 2, 
+            _type: "comment", 
+            text: "a comment",
+            user: %{
+              id: 1,
+              name: "Dummy",
+              not_an_attr: true,
+              _type: "user"
+            }
+          }
+        }
+      }
 
       assert Entity.build(context) == expected
     end
