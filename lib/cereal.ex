@@ -7,15 +7,14 @@ defmodule Cereal do
   end
 
   def serialize(serializer, data, conn \\ %{}, opts \\ []) do
-    Context
-    |> struct(%{data: data, conn: conn, opts: opts, serializer: serializer})
+    %Context{data: data, conn: conn, opts: opts, serializer: serializer}
     |> Base.build()
     |> Formatter.format()
+    |> serializer.transform()
   end
 
   def serialize_errors(serializer, data, conn \\ %{}, opts \\ []) do
-    Context
-    |> struct(%{data: data, conn: conn, opts: opts, serializer: serializer})
+    %Context{data: data, conn: conn, opts: opts, serializer: serializer}
     |> Errors.build()
     |> Formatter.format()
   end

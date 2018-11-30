@@ -34,7 +34,7 @@ defmodule Cereal.Builders.EntityTest do
   defmodule DefaultCommentRelationSerializer do
     use Cereal.Serializer
     attributes [:text]
-    has_one :author, serializer: UserSerializer, default: TestModel.User, include: true 
+    has_one :author, serializer: UserSerializer, default: TestModel.User, include: true
   end
 
   defmodule EmbedSerializer do
@@ -149,13 +149,13 @@ defmodule Cereal.Builders.EntityTest do
       }
       context  = %{context | data: data, serializer: EmbedSerializer, opts: []}
       expected = %Entity{
-        id: 3, 
-        type: "embed", 
+        id: 3,
+        type: "embed",
         attributes: %{
-          text: "some_text", 
+          text: "some_text",
           comment: %{
-            id: 2, 
-            _type: "comment", 
+            id: 2,
+            _type: "comment",
             text: "a comment",
             user: %{
               id: 1,

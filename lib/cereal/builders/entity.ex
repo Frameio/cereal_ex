@@ -3,7 +3,8 @@ defmodule Cereal.Builders.Entity do
   defstruct [:id, :type, :attributes, {:rels, %{}}]
 
   def build(%{data: data} = context) when is_list(data) do
-    data |> Enum.map(fn entity ->
+    data
+    |> Enum.map(fn entity ->
       context
       |> Map.put(:data, entity)
       |> build()
@@ -50,7 +51,7 @@ defmodule Cereal.Builders.Entity do
 
   defp build_relation_entity(nil, _, _, _), do: nil
   defp build_relation_entity(relation, context, name, rel_opts) do
-    context 
+    context
     |> Map.put(:serializer, rel_opts.serializer)
     |> Map.put(:opts, with_relationship_includes(context.opts, name))
     |> Map.put(:data, relation)

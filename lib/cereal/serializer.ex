@@ -37,6 +37,7 @@ defmodule Cereal.Serializer do
       unquote(define_default_attributes())
       unquote(define_default_relationships())
       unquote(define_default_preload())
+      unquote(define_default_transform())
 
       @before_compile Cereal.Serializer
     end
@@ -92,6 +93,13 @@ defmodule Cereal.Serializer do
     quote do
       def preload(data, conn, _include_opts), do: data
       defoverridable [preload: 3]
+    end
+  end
+
+  defp define_default_transform do
+    quote do
+      def transform(data), do: data
+      defoverridable [transform: 1]
     end
   end
 
