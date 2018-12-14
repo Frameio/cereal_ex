@@ -34,7 +34,7 @@ defmodule Cereal.Builders.EntityTest do
   defmodule DefaultCommentRelationSerializer do
     use Cereal.Serializer
     attributes [:text]
-    has_one :author, serializer: UserSerializer, default: TestModel.User, include: true 
+    has_one :author, serializer: UserSerializer, default: TestModel.User, include: true
   end
 
   defmodule EmbedSerializer do
@@ -83,15 +83,6 @@ defmodule Cereal.Builders.EntityTest do
       expected = %Entity{id: 1, type: "comment", attributes: %{text: "A comment"}, rels: %{user: nil}}
 
       assert Entity.build(context) == expected
-    end
-
-    test "it will raise when trying to serialize a relation that returns an Ecto.Association.NotLoaded struct", %{context: context} do
-      data = %TestModel.Comment{id: 1, text: "A comment", user: %Ecto.Association.NotLoaded{}}
-      context = %{context | data: data, serializer: CommentSerializer}
-
-      assert_raise Cereal.AssociationNotLoadedError, fn ->
-        Entity.build(context)
-      end
     end
 
     test "it will skip non-included entities", %{context: context} do
@@ -149,13 +140,13 @@ defmodule Cereal.Builders.EntityTest do
       }
       context  = %{context | data: data, serializer: EmbedSerializer, opts: []}
       expected = %Entity{
-        id: 3, 
-        type: "embed", 
+        id: 3,
+        type: "embed",
         attributes: %{
-          text: "some_text", 
+          text: "some_text",
           comment: %{
-            id: 2, 
-            _type: "comment", 
+            id: 2,
+            _type: "comment",
             text: "a comment",
             user: %{
               id: 1,
