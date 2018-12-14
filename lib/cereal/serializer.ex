@@ -146,12 +146,11 @@ defmodule Cereal.Serializer do
   end
 
   @doc false
-  @error Cereal.AssociationNotLoadedError
-  def get_relationship_data(struct, name, opts) do
+  def get_relationship_data(struct, name, _opts) do
     struct
     |> Map.get(name)
     |> case do
-      %{__struct__: Ecto.Association.NotLoaded} -> raise @error, rel: name, opts: opts
+      %{__struct__: Ecto.Association.NotLoaded} -> nil
       relations -> relations
     end
   end
