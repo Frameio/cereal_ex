@@ -46,6 +46,9 @@ defmodule Cereal.Serializer do
     quote do
       def __relations,  do: @relations
       def __attributes, do: @attributes
+
+      def transform(data), do: data
+      defoverridable [transform: 1]
     end
   end
 
