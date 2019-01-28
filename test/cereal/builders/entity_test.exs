@@ -10,6 +10,14 @@ defmodule Cereal.Builders.EntityTest do
     def not_an_attr(_, _), do: true
   end
 
+  defmodule TransformedSerializer do
+    use Cereal.Serializer
+    attributes [:name]
+    def transform(data) do
+      %{name: data.name <> "-1"}
+    end
+  end
+
   defmodule CommentSerializer do
     use Cereal.Serializer
     attributes [:text]
@@ -190,6 +198,15 @@ defmodule Cereal.Builders.EntityTest do
           }]
         }
       }
+
+      assert Entity.build(context) == expected
+    end
+
+    test "it will modify attributes with a transform function", %{context: context} do
+      user = %TestModel.User{id: 1, name: "Johnny"}
+      context = %{context | data: user, serializer: TestModel.TransformedSerializer}
+
+      expected = %Entity{attributes: %{name: "Johnny-1"}}
 
       assert Entity.build(context) == expected
     end
