@@ -38,6 +38,9 @@ defmodule Cereal.Serializer do
       unquote(define_default_relationships())
       unquote(define_default_preload())
 
+      def transform(data), do: data
+      defoverridable [transform: 1]
+
       @before_compile Cereal.Serializer
     end
   end
@@ -46,9 +49,6 @@ defmodule Cereal.Serializer do
     quote do
       def __relations,  do: @relations
       def __attributes, do: @attributes
-
-      def transform(data), do: data
-      defoverridable [transform: 1]
     end
   end
 
