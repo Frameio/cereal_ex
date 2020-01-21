@@ -34,6 +34,7 @@ defmodule Cereal.Serializer do
 
       unquote(define_default_id())
       unquote(define_default_type(__CALLER__.module))
+      unquote(define_default_assigns())
       unquote(define_default_attributes())
       unquote(define_default_relationships())
       unquote(define_default_preload())
@@ -66,6 +67,13 @@ defmodule Cereal.Serializer do
       def type(), do: unquote(type_for_module)
       def type(_, _), do: type()
       defoverridable [type: 2]
+    end
+  end
+
+  defp define_default_assigns do
+    quote do
+      def assigns(_data, _conn), do: %{}
+      defoverridable [assigns: 2]
     end
   end
 

@@ -1,6 +1,10 @@
 ExUnit.start()
 
 # Models used for testing
+defmodule TestModel.Blog do
+  defstruct [:id, :name, :articles]
+end
+
 defmodule TestModel.Article do
   defstruct [:id, :name, :author, :comments]
 end

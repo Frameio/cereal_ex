@@ -1,6 +1,7 @@
 defmodule Cereal.Builders.Entity do
   @type t :: %__MODULE__{}
   defstruct [:id, :type, :attributes, {:rels, %{}}]
+  import Plug.Conn, only: [assign: 3]
 
   def build(%{data: data} = context) when is_list(data) do
     data |> Enum.map(fn entity ->
@@ -11,7 +12,10 @@ defmodule Cereal.Builders.Entity do
   end
 
   def build(%{serializer: serializer} = context) do
-    context = Map.put(context, :data, serializer.transform(context.data))
+    context =
+      context
+      |> Map.put(:data, serializer.transform(context.data))
+      |> do_assigns()
 
     %__MODULE__{
       id: serializer.id(context.data, context.conn),
@@ -19,6 +23,17 @@ defmodule Cereal.Builders.Entity do
       attributes: attributes(context),
       rels: relationships(context),
     }
+  end
+
+  # if an assigns/2 function was specified in the serializer - we'll add its
+  # return value to the conn's assigns
+  defp do_assigns(%{serializer: serializer, conn: conn} = context) do
+    conn =
+      context.data
+      |> serializer.assigns(conn)
+      |> Enum.reduce(conn, fn {key, value}, acc -> assign(acc, key, value) end)
+
+    Map.put(context, :conn, conn)
   end
 
   defp attributes(%{serializer: serializer} = context) do
@@ -52,7 +67,7 @@ defmodule Cereal.Builders.Entity do
 
   defp build_relation_entity(nil, _, _, _), do: nil
   defp build_relation_entity(relation, context, name, rel_opts) do
-    context 
+    context
     |> Map.put(:serializer, rel_opts.serializer)
     |> Map.put(:opts, with_relationship_includes(context.opts, name))
     |> Map.put(:data, relation)
