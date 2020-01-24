@@ -204,9 +204,9 @@ defmodule Cereal.Builders.EntityTest do
 
     test "it will modify attributes with a transform function", %{context: context} do
       user = %TestModel.User{id: 1, name: "Johnny"}
-      context = %{context | data: user, serializer: TestModel.TransformedSerializer}
+      context = %{context | data: user, serializer: TransformedSerializer}
 
-      expected = %Entity{attributes: %{name: "Johnny-1"}}
+      expected = %Entity{attributes: %{name: "Johnny-1"}, type: "transformed"}
 
       assert Entity.build(context) == expected
     end
