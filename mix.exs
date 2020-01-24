@@ -35,7 +35,7 @@ defmodule Cereal.Mixfile do
   defp deps do
     [
       {:ecto, ">= 2.0.0"},
-      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:ex_doc, "~> 0.19", only: :dev},
       {:scrivener, "~> 1.2 or ~> 2.0", optional: true},
       {:plug_cowboy, "~> 2.0.2"}
     ]
