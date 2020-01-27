@@ -27,17 +27,17 @@ defmodule Cereal.Builders.Entity do
 
   # if an assigns/2 function was specified in the serializer - we'll add its
   # return value to the conn's assigns
-  defp do_assigns(%{serializer: serializer, conn: %Plug.Conn{} = conn} = context) do
+  defp do_assigns(%{serializer: serializer, conn: conn, data: data} = context) do
+    conn = Map.put_new(conn, :assigns, %{})
     conn =
-      context.data
+      data
       |> serializer.assigns(conn)
-      |> Enum.reduce(conn, fn {key, value}, acc -> assign(acc, key, value) end)
+      |> Enum.reduce(conn, &do_assign/2)
+    %{context | conn: conn}
+  end
 
-    Map.put(context, :conn, conn)
-  end
-  defp do_assigns(context) do
-    %{context | conn: %Plug.Conn{}} |> do_assigns()
-  end
+  defp do_assign({key, value}, %Plug.Conn{} = acc), do: assign(acc, key, value)
+  defp do_assign({key, value}, %{} = acc), do: put_in(acc, [:assigns, key], value)
 
   defp attributes(%{serializer: serializer} = context) do
     serializer.attributes(context.data, context.conn)
