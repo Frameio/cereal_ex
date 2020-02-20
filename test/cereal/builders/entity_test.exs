@@ -117,7 +117,7 @@ defmodule Cereal.Builders.EntityTest do
 
     test "it will conditionally include fields", %{context: context} do
       data     = %TestModel.User{id: 1, name: "Dummy"}
-      opts     = %{fields: [user: "name"]}
+      opts     = %{fields: [user: [:name]]}
       context  = %{context | data: data, serializer: UserSerializer, opts: opts}
       expected = %Entity{id: 1, type: "user", attributes: %{name: "Dummy"}}
 
@@ -126,7 +126,7 @@ defmodule Cereal.Builders.EntityTest do
 
     test "it will conditionally drop excluded fields", %{context: context} do
       data     = %TestModel.User{id: 1, name: "Dummy"}
-      opts     = %{excludes: [user: "name"]}
+      opts     = %{excludes: [user: [:name]]}
       context  = %{context | data: data, serializer: UserSerializer, opts: opts}
       expected = %Entity{id: 1, type: "user", attributes: %{not_an_attr: true}}
 

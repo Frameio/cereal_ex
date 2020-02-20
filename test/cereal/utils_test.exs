@@ -24,5 +24,35 @@ defmodule Cereal.UtilsTest do
 
       assert Utils.normalize_includes(includes) == expected
     end
+
+    test "will filter out strings that cannot safely become atoms" do
+      includes = "account,account.user,account.thisdoesnotexist,account.parent"
+      expected = [account: [parent: [], user: []]]
+
+      assert Utils.normalize_includes(includes) == expected
+    end
+  end
+
+  describe "#build_fields_list/1" do
+    test "It will convert the comma-separated strings" do
+      input = [user: "name,id,location", comment: "type"]
+      result = Utils.build_fields_list(input)
+
+      assert result == [user: [:name, :id, :location], comment: [:type]]
+    end
+
+    test "It will filter out strings that cannot safely become atoms" do
+      input = [user: "name,id,thisisneveranatom,location", comment: "type"]
+      result = Utils.build_fields_list(input)
+
+      assert result == [user: [:name, :id, :location], comment: [:type]]
+    end
+
+    test "It will handle other unexpected input" do
+      input = [user: "name,id", comment: 10]
+      result = Utils.build_fields_list(input)
+
+      assert result == [user: [:name, :id], comment: []]
+    end
   end
 end

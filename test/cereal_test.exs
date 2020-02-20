@@ -9,6 +9,7 @@ defmodule CerealTest do
     def property_that_needs_context(_, %{assigns: %{article_name: article_name, comment_id: comment_id}}) do
       "My context is #{article_name} and comment with id #{comment_id}"
     end
+    def property_that_needs_context(_, _), do: ""
   end
 
   defmodule CommentSerializer do
@@ -55,6 +56,90 @@ defmodule CerealTest do
   end
 
   describe "#serialize/3" do
+    test "will include nested entities that are requested via includes params" do
+      user = %TestModel.User{id: 1, name: "John Doe"}
+      article = %TestModel.Article{id: 1, name: "Article 1", author: user}
+      blog = %TestModel.Blog{id: 1, articles: [article]}
+
+      result = Cereal.serialize(BlogSerializer, blog, %{}, include: "articles.author")
+
+      assert result == %{
+        _type: "blog",
+        id: 1,
+        name: "I am a fallback prop",
+        articles: [
+          %{
+            _type: "article",
+            id: 1,
+            name: "Article 1",
+            author: %{
+              _type: "user",
+              id: 1,
+              name: "John Doe",
+              property_that_needs_context: ""
+            }
+          }
+        ]
+      }
+    end
+
+    test "will include only the specified attributes for a given record" do
+      user = %TestModel.User{id: 1, name: "John Doe"}
+      article = %TestModel.Article{id: 1, name: "Article 1", author: user}
+      blog = %TestModel.Blog{id: 1, articles: [article]}
+
+      result =
+        Cereal.serialize(BlogSerializer, blog, %{},
+          include: "articles.author",
+          fields: [user: "name", article: "id"]
+        )
+
+      assert result == %{
+        _type: "blog",
+        id: 1,
+        name: "I am a fallback prop",
+        articles: [
+          %{
+            _type: "article",
+            id: 1,
+            author: %{
+              _type: "user",
+              id: 1,
+              name: "John Doe"
+            }
+          }
+        ]
+      }
+    end
+
+    test "will exclude the specified attributes for a given record" do
+      user = %TestModel.User{id: 1, name: "John Doe"}
+      article = %TestModel.Article{id: 1, name: "Article 1", author: user}
+      blog = %TestModel.Blog{id: 1, articles: [article]}
+
+      result =
+        Cereal.serialize(BlogSerializer, blog, %{},
+          include: "articles.author",
+          excludes: [user: "name,property_that_needs_context", article: "name"]
+        )
+
+      assert result == %{
+        _type: "blog",
+        id: 1,
+        name: "I am a fallback prop",
+        articles: [
+          %{
+            _type: "article",
+            id: 1,
+            author: %{
+              _type: "user",
+              id: 1
+            }
+          }
+        ]
+      }
+    end
+
     test "will allow assigning data to the conn on relationships" do
       author = %TestModel.User{id: 1, name: "Johnny Test"}
       comments1 = [%TestModel.Comment{id: 1, text: "A comment", user: author}]
