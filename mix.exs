@@ -1,12 +1,12 @@
 defmodule Cereal.Mixfile do
   use Mix.Project
 
-  @version "1.1.1"
+  @version "1.2"
 
   def project do
     [app: :cereal,
      version: @version,
-     elixir: "~> 1.4",
+     elixir: "~> 1.5",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      package: package(),
@@ -37,7 +37,7 @@ defmodule Cereal.Mixfile do
       {:ecto, ">= 2.0.0"},
       {:ex_doc, "~> 0.19", only: :dev},
       {:scrivener, "~> 1.2 or ~> 2.0", optional: true},
-      {:plug_cowboy, "~> 2.0.2"}
+      {:plug_cowboy, "~> 2.2"}
     ]
   end
 
