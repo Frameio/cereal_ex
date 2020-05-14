@@ -14,7 +14,7 @@ defmodule Cereal.Builders.Entity do
   def build(%{serializer: serializer} = context) do
     context =
       context
-      |> Map.put(:data, serializer.transform(context.data))
+      |> Map.put(:data, serializer.transform(context.data, context.conn))
       |> do_assigns()
 
     %__MODULE__{

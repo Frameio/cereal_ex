@@ -13,8 +13,8 @@ defmodule Cereal.Builders.EntityTest do
   defmodule TransformedSerializer do
     use Cereal.Serializer
     attributes [:name]
-    def transform(data) do
-      %{name: data.name <> "-1"}
+    def transform(data, conn) do
+      %{name: data.name <> "-1-" <> conn.name}
     end
   end
 
@@ -202,11 +202,11 @@ defmodule Cereal.Builders.EntityTest do
       assert Entity.build(context) == expected
     end
 
-    test "it will modify attributes with a transform function", %{context: context} do
+    test "it will modify attributes with a transform/2 function", %{context: context} do
       user = %TestModel.User{id: 1, name: "Johnny"}
-      context = %{context | data: user, serializer: TransformedSerializer}
+      context = %{context | data: user, conn: %{name: "conn-name"}, serializer: TransformedSerializer}
 
-      expected = %Entity{attributes: %{name: "Johnny-1"}, type: "transformed"}
+      expected = %Entity{attributes: %{name: "Johnny-1-conn-name"}, type: "transformed"}
 
       assert Entity.build(context) == expected
     end

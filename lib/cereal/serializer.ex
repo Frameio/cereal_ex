@@ -38,9 +38,7 @@ defmodule Cereal.Serializer do
       unquote(define_default_attributes())
       unquote(define_default_relationships())
       unquote(define_default_preload())
-
-      def transform(data), do: data
-      defoverridable [transform: 1]
+      unquote(define_default_transform())
 
       @before_compile Cereal.Serializer
     end
@@ -57,6 +55,13 @@ defmodule Cereal.Serializer do
     quote do
       def id(data, _conn), do: Map.get(data, :id)
       defoverridable [id: 2]
+    end
+  end
+
+  defp define_default_transform do
+    quote do
+      def transform(data, _), do: data
+      defoverridable [transform: 2]
     end
   end
 
