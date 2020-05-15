@@ -1,18 +1,20 @@
 defmodule Cereal.Mixfile do
   use Mix.Project
 
-  @version "1.2.0"
+  @version "1.3.0"
 
   def project do
-    [app: :cereal,
-     version: @version,
-     elixir: "~> 1.5",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     package: package(),
-     description: description(),
-     deps: deps(),
-     docs: docs()]
+    [
+      app: :cereal,
+      version: @version,
+      elixir: "~> 1.5",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      package: package(),
+      description: description(),
+      deps: deps(),
+      docs: docs()
+    ]
   end
 
   # Configuration for the OTP application
