@@ -100,13 +100,9 @@ defmodule Cereal.Builders.Entity do
   end
   defp filter_attributes(attrs, _), do: attrs
 
-  defp do_filter_attributes(attrs, nil), do: attrs
   defp do_filter_attributes(attrs, {:take, fields}) when is_list(fields),
     do: Map.take(attrs, fields)
   defp do_filter_attributes(attrs, {:drop, fields}) when is_list(fields),
     do: Map.drop(attrs, fields)
-  defp do_filter_attributes(attrs, {action, fields}) when is_binary(fields) do
-    fields = fields |> String.split(",") |> Enum.map(&String.to_atom/1)
-    do_filter_attributes(attrs, {action, fields})
-  end
+  defp do_filter_attributes(attrs, _), do: attrs
 end

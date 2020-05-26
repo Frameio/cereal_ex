@@ -19,8 +19,8 @@ defmodule Cereal.Builders.Base do
     end
   end
   def build(%{serializer: serializer, data: data, opts: opts} = context) do
-    opts    = normalize_opts(opts)
-    data    = serializer.preload(data, context.conn, Map.get(opts, :include, []))
+    opts = parse_opts(opts)
+    data = serializer.preload(data, context.conn, Map.get(opts, :include, []))
     context = %{context | data: data, opts: opts}
 
     struct(__MODULE__, %{})
@@ -32,10 +32,25 @@ defmodule Cereal.Builders.Base do
   defp build_page(%{opts: opts}), do: Map.get(opts, :page)
   defp build_metadata(%{opts: opts}), do: Map.get(opts, :metadata)
 
-  defp normalize_opts(opts) when is_list(opts), do: opts |> Enum.into(%{}) |> normalize_opts()
-  defp normalize_opts(%{include: include} = opts) when is_binary(include),
-    do: normalize_opts(%{opts | include: Utils.normalize_includes(include)})
-  defp normalize_opts(opts), do: opts
+  defp parse_opts(opts) when is_list(opts), do: opts |> Map.new() |> parse_opts()
+  defp parse_opts(opts) when is_map(opts) do
+    opts
+    |> parse_includes()
+    |> parse_fields_list(:fields)
+    |> parse_fields_list(:excludes)
+  end
+  defp parse_opts(_), do: %{}
+
+  defp parse_includes(%{include: include} = opts) when is_binary(include),
+    do: %{opts | include: Utils.normalize_includes(include)}
+  defp parse_includes(opts), do: opts
+
+  defp parse_fields_list(opts, key) do
+    case Map.get(opts, key) do
+      nil -> opts
+      fields -> Map.put(opts, key, Utils.build_fields_list(fields))
+    end
+  end
 
   # Parse a Scrivener.Page into a map we can use
   defp to_page_options(page), do: page |> Map.from_struct() |> Map.drop([:entries])
