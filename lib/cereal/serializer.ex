@@ -122,7 +122,9 @@ defmodule Cereal.Serializer do
     end
   end
 
-  defmacro embeds_one(name, [serializer: serializer] = _opts) do
+  defmacro embeds_one(name, opts) do
+    [serializer: serializer] = expand_serializer_in_place(opts, {:embeds_one, 2}, __CALLER__)
+
     quote do
       @attributes [unquote(name) | @attributes]
       def unquote(name)(%{unquote(name) => nil}, _), do: nil
@@ -134,6 +136,7 @@ defmodule Cereal.Serializer do
   end
 
   defmacro has_one(name, opts) do
+    opts = expand_serializer_in_place(opts, {:has_many, 2}, __CALLER__)
     normalized_opts = normalize_relationship_opts(opts, __CALLER__)
 
     quote do
@@ -143,6 +146,7 @@ defmodule Cereal.Serializer do
   end
 
   defmacro has_many(name, opts) do
+    opts = expand_serializer_in_place(opts, {:has_many, 2}, __CALLER__)
     normalized_opts = normalize_relationship_opts(opts, __CALLER__)
 
     quote do
@@ -171,9 +175,25 @@ defmodule Cereal.Serializer do
     end
   end
 
-  defp normalize_relationship_opts(opts, _) do
+  defp normalize_relationship_opts(opts, _env) do
     quote do
       unquote(opts) |> Enum.into(%{})
     end
   end
+
+  def aliases(opts) do
+    opts
+    |> Keyword.values()
+    |> Enum.filter(fn
+      {:__aliases__, _, _} -> true
+      _ -> false
+    end)
+  end
+
+  defp expand_serializer_in_place(opts, alias_context, env) do
+    Keyword.update!(opts, :serializer, &expand_alias(&1, alias_context, env))
+  end
+
+  defp expand_alias({:__aliases__, _, _} = ast, alias_context, env), do: Macro.expand(ast, %{env | function: alias_context})
+  defp expand_alias(ast, _alias_context, _env), do: ast
 end
