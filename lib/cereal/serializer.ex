@@ -181,15 +181,6 @@ defmodule Cereal.Serializer do
     end
   end
 
-  def aliases(opts) do
-    opts
-    |> Keyword.values()
-    |> Enum.filter(fn
-      {:__aliases__, _, _} -> true
-      _ -> false
-    end)
-  end
-
   defp expand_serializer_in_place(opts, alias_context, env) do
     Keyword.update!(opts, :serializer, &expand_alias(&1, alias_context, env))
   end
