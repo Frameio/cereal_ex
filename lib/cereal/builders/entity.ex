@@ -4,11 +4,13 @@ defmodule Cereal.Builders.Entity do
   import Plug.Conn, only: [assign: 3]
 
   def build(%{data: data} = context) when is_list(data) do
-    data |> Enum.map(fn entity ->
+    data
+    |> Task.async_stream(fn entity ->
       context
       |> Map.put(:data, entity)
       |> build()
     end)
+    |> Enum.map(fn({:ok, result}) -> result end)
   end
 
   def build(%{serializer: serializer} = context) do
