@@ -36,10 +36,10 @@ defmodule Cereal.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:ecto, ">= 2.0.0"},
+      {:ecto, ">= 3.0.0"},
       {:ex_doc, "~> 0.19", only: :dev},
       {:scrivener, "~> 1.2 or ~> 2.0", optional: true},
-      {:plug_cowboy, "~> 2.2"}
+      {:plug_cowboy, "~> 2.5"}
     ]
   end
 
