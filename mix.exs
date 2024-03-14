@@ -1,7 +1,7 @@
 defmodule Cereal.Mixfile do
   use Mix.Project
 
-  @version "1.4.0"
+  @version "1.4.1"
 
   def project do
     [
@@ -36,7 +36,7 @@ defmodule Cereal.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:ecto, "~> 3.9", only: :test},
+      {:ecto, "~> 3.9"},
       {:ex_doc, "~> 0.19", only: :dev},
       {:scrivener, "~> 1.2 or ~> 2.0", optional: true},
       {:plug, "~> 1.12"}
