@@ -13,14 +13,14 @@ defmodule Cereal.ErrorSerializer do
   defp define_default_title do
     quote do
       def title(conn), do: Cereal.ErrorSerializer.title(conn)
-      defoverridable [title: 1]
+      defoverridable title: 1
     end
   end
 
   defp define_default_status do
     quote do
       def status(conn), do: Cereal.ErrorSerializer.status(conn)
-      defoverridable [status: 1]
+      defoverridable status: 1
     end
   end
 
@@ -29,7 +29,7 @@ defmodule Cereal.ErrorSerializer do
       def error_detail(data), do: Cereal.ErrorSerializer.error_detail(data)
       def error_code(message), do: Cereal.ErrorSerializer.error_code(message)
       def error_metadata(message, conn), do: Cereal.ErrorSerializer.error_metadata(message, conn)
-      defoverridable [error_detail: 1, error_code: 1, error_metadata: 2]
+      defoverridable error_detail: 1, error_code: 1, error_metadata: 2
     end
   end
 

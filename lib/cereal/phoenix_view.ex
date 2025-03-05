@@ -1,6 +1,7 @@
 defmodule Cereal.PhoenixView do
   defmacro __using__(_) do
     module = __CALLER__.module
+
     quote do
       use Cereal.Serializer
 

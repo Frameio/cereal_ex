@@ -10,12 +10,14 @@ defmodule Cereal.Formatters.ErrorsTest do
       expected = %{
         message: "There was a problem processing your request",
         code: 422,
-        errors: [%{
-          code: :required,
-          title: "is required",
-          field: "title",
-          detail: "title is required"
-        }]
+        errors: [
+          %{
+            code: :required,
+            title: "is required",
+            field: "title",
+            detail: "title is required"
+          }
+        ]
       }
 
       error = %Error{title: "is required", source: "title", detail: "title is required", code: :required}

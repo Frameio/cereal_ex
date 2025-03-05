@@ -6,13 +6,14 @@ defmodule Cereal.Builders.EntityTest do
 
   defmodule UserSerializer do
     use Cereal.Serializer
-    attributes [:name, :not_an_attr]
+    attributes([:name, :not_an_attr])
     def not_an_attr(_, _), do: true
   end
 
   defmodule TransformedSerializer do
     use Cereal.Serializer
-    attributes [:name]
+    attributes([:name])
+
     def transform(data, conn) do
       %{name: data.name <> "-1-" <> conn.name}
     end
@@ -20,52 +21,53 @@ defmodule Cereal.Builders.EntityTest do
 
   defmodule CommentSerializer do
     use Cereal.Serializer
-    attributes [:text]
-    has_one :user, serializer: UserSerializer
+    attributes([:text])
+    has_one(:user, serializer: UserSerializer)
   end
 
   defmodule ArticleSerializer do
     use Cereal.Serializer
-    attributes [:name]
-    has_one :author, serializer: UserSerializer
-    has_many :comments, serializer: CommentSerializer
+    attributes([:name])
+    has_one(:author, serializer: UserSerializer)
+    has_many(:comments, serializer: CommentSerializer)
   end
 
   defmodule ConditionalCommentSerializer do
     use Cereal.Serializer
-    attributes [:text]
-    has_one :user, serializer: UserSerializer, include: false
+    attributes([:text])
+    has_one(:user, serializer: UserSerializer, include: false)
 
     def type(_, _), do: "comment"
   end
 
   defmodule DefaultCommentRelationSerializer do
     use Cereal.Serializer
-    attributes [:text]
-    has_one :author, serializer: UserSerializer, default: TestModel.User, include: true
+    attributes([:text])
+    has_one(:author, serializer: UserSerializer, default: TestModel.User, include: true)
   end
 
   defmodule EmbedSerializer do
     use Cereal.Serializer
-    attributes [:text]
+    attributes([:text])
 
-    embeds_one :comment, serializer: CommentSerializer
+    embeds_one(:comment, serializer: CommentSerializer)
   end
 
   describe "#build/1" do
     setup [:setup_context]
 
     test "it will build an entity with an id, type and attributes", %{context: context} do
-      data     = %TestModel.User{id: 1, name: "Dummy"}
-      context  = %{context | data: data, serializer: UserSerializer}
+      data = %TestModel.User{id: 1, name: "Dummy"}
+      context = %{context | data: data, serializer: UserSerializer}
       expected = %Entity{id: 1, type: "user", attributes: %{name: "Dummy", not_an_attr: true}}
 
       assert Entity.build(context) == expected
     end
 
     test "it will build a list of entities with an id, type and attributes", %{context: context} do
-      data     = [%TestModel.User{id: 1, name: "Dummy"}, %TestModel.User{id: 2, name: "Another"}]
-      context  = %{context | data: data, serializer: UserSerializer}
+      data = [%TestModel.User{id: 1, name: "Dummy"}, %TestModel.User{id: 2, name: "Another"}]
+      context = %{context | data: data, serializer: UserSerializer}
+
       expected = [
         %Entity{id: 1, type: "user", attributes: %{name: "Dummy", not_an_attr: true}},
         %Entity{id: 2, type: "user", attributes: %{name: "Another", not_an_attr: true}}
@@ -116,18 +118,18 @@ defmodule Cereal.Builders.EntityTest do
     end
 
     test "it will conditionally include fields", %{context: context} do
-      data     = %TestModel.User{id: 1, name: "Dummy"}
-      opts     = %{fields: [user: [:name]]}
-      context  = %{context | data: data, serializer: UserSerializer, opts: opts}
+      data = %TestModel.User{id: 1, name: "Dummy"}
+      opts = %{fields: [user: [:name]]}
+      context = %{context | data: data, serializer: UserSerializer, opts: opts}
       expected = %Entity{id: 1, type: "user", attributes: %{name: "Dummy"}}
 
       assert Entity.build(context) == expected
     end
 
     test "it will conditionally drop excluded fields", %{context: context} do
-      data     = %TestModel.User{id: 1, name: "Dummy"}
-      opts     = %{excludes: [user: [:name]]}
-      context  = %{context | data: data, serializer: UserSerializer, opts: opts}
+      data = %TestModel.User{id: 1, name: "Dummy"}
+      opts = %{excludes: [user: [:name]]}
+      context = %{context | data: data, serializer: UserSerializer, opts: opts}
       expected = %Entity{id: 1, type: "user", attributes: %{not_an_attr: true}}
 
       assert Entity.build(context) == expected
@@ -146,7 +148,9 @@ defmodule Cereal.Builders.EntityTest do
           }
         }
       }
-      context  = %{context | data: data, serializer: EmbedSerializer, opts: []}
+
+      context = %{context | data: data, serializer: EmbedSerializer, opts: []}
+
       expected = %Entity{
         id: 3,
         type: "embed",
@@ -181,21 +185,23 @@ defmodule Cereal.Builders.EntityTest do
         attributes: %{name: "Article 1"},
         rels: %{
           author: nil,
-          comments: [%Entity{
-            id: 1,
-            type: "comment",
-            attributes: %{text: "A comment"},
-            rels: %{
-              user: %Entity{
-                id: 1,
-                type: "user",
-                attributes: %{
-                  name: "Johnny User",
-                  not_an_attr: true
+          comments: [
+            %Entity{
+              id: 1,
+              type: "comment",
+              attributes: %{text: "A comment"},
+              rels: %{
+                user: %Entity{
+                  id: 1,
+                  type: "user",
+                  attributes: %{
+                    name: "Johnny User",
+                    not_an_attr: true
+                  }
                 }
               }
             }
-          }]
+          ]
         }
       }
 

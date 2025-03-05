@@ -7,6 +7,7 @@ defmodule Cereal.AssociationNotLoadedError do
       Please pre-fetch the relationship before serialization or override the
       #{opts[:name]}/2 function in your serializer.
     """
+
     %Cereal.AssociationNotLoadedError{message: msg}
   end
 end
