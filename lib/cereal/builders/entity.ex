@@ -5,12 +5,11 @@ defmodule Cereal.Builders.Entity do
 
   def build(%{data: data} = context) when is_list(data) do
     data
-    |> Task.async_stream(fn entity ->
+    |> Enum.map(fn entity ->
       context
       |> Map.put(:data, entity)
       |> build()
     end)
-    |> Enum.map(fn {:ok, result} -> result end)
   end
 
   def build(%{serializer: serializer} = context) do

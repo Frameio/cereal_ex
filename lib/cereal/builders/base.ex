@@ -8,7 +8,7 @@ defmodule Cereal.Builders.Base do
   @doc """
   Builds a Cereal Base struct that encapsulates the JSON that will be serialized.
 
-  Will correctly handle Scrievener pagination.
+  Will correctly handle Scrivener pagination.
   """
   @spec build(Cereal.Context.t()) :: __MODULE__.t()
   def build(context)
