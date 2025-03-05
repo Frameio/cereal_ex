@@ -3,11 +3,7 @@ defmodule Cereal.Formatters.Attributes do
 
   def format(%Cereal.Builders.Base{data: data}), do: format_data(data)
 
-  defp format_data(data) when is_list(data) do
-    data
-    |> Task.async_stream(&format_data(&1))
-    |> Enum.map(fn {:ok, result} -> result end)
-  end
+  defp format_data(data) when is_list(data), do: data |> Enum.map(&format_data/1)
 
   defp format_data(%Cereal.Builders.Entity{} = entity) do
     entity.attributes
