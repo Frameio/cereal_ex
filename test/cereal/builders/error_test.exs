@@ -30,9 +30,11 @@ defmodule Cereal.Builders.ErrorTest do
     test "it will build a list of errors", %{context: context} do
       data = [
         %{title: "is required", detail: "field is required", source: "field"},
-        %{title: "is required", detail: "field is required", source: "field"},
+        %{title: "is required", detail: "field is required", source: "field"}
       ]
+
       context = %{context | data: data, serializer: BaseErrorSerializer}
+
       expected = [
         %Error{title: "is required", detail: "field is required", source: "field", code: :required},
         %Error{title: "is required", detail: "field is required", source: "field", code: :required}
@@ -44,7 +46,14 @@ defmodule Cereal.Builders.ErrorTest do
     test "it will add custom properties from the serializer", %{context: context} do
       data = %{title: "is required", detail: "field is required", source: "field"}
       context = %{context | data: data, serializer: CustomErrorSerializer}
-      expected = %Error{title: "is required", detail: "custom", source: "field", code: :something, meta: %{custom: true}}
+
+      expected = %Error{
+        title: "is required",
+        detail: "custom",
+        source: "field",
+        code: :something,
+        meta: %{custom: true}
+      }
 
       assert Error.build(context) == expected
     end
@@ -52,6 +61,7 @@ defmodule Cereal.Builders.ErrorTest do
     test "it will correctly build ecto changeset errors", %{context: context} do
       data = %Ecto.Changeset{errors: [{:name, "is required"}]}
       context = %{context | data: data, serializer: BaseErrorSerializer}
+
       expected = [
         %Error{title: "is required", detail: "name is required", source: :name, code: :required}
       ]

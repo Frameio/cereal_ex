@@ -6,9 +6,9 @@ defmodule Cereal.Formatters.Attributes do
   defp format_data(data) when is_list(data) do
     data
     |> Task.async_stream(&format_data(&1))
-    |> Enum.map(fn({:ok, result}) -> result end)
+    |> Enum.map(fn {:ok, result} -> result end)
   end
-  
+
   defp format_data(%Cereal.Builders.Entity{} = entity) do
     entity.attributes
     |> Map.put(:id, entity.id)

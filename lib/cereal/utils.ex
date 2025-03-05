@@ -1,5 +1,4 @@
 defmodule Cereal.Utils do
-
   @doc """
   Given a the name of a serializer, will return a string
   that represents the type of the entity being processed.
@@ -18,7 +17,7 @@ defmodule Cereal.Utils do
   of child relations. Implicitly filters out any relation in the normalized tree
   that cannot be safely converted from a binary string to an atom.
   """
-  @spec normalize_includes(String.t) :: Keyword.t
+  @spec normalize_includes(String.t()) :: Keyword.t()
   def normalize_includes(include) do
     include
     |> String.split(",")
@@ -27,6 +26,7 @@ defmodule Cereal.Utils do
 
   defp normalize_include_paths(paths), do: normalize_include_paths(paths, [])
   defp normalize_include_paths([], normalized), do: normalized
+
   defp normalize_include_paths([path | paths], normalized) do
     normalized =
       path
@@ -38,6 +38,7 @@ defmodule Cereal.Utils do
   end
 
   defp normalize_relationship_path([]), do: []
+
   defp normalize_relationship_path([rel | rest]) do
     case string_to_atom(rel) do
       nil -> []
@@ -65,12 +66,14 @@ defmodule Cereal.Utils do
   def build_fields_list([{_, _} | _] = fields) do
     Enum.map(fields, fn {key, fields_str} -> {key, build_fields_list(fields_str)} end)
   end
+
   def build_fields_list(fields) when is_binary(fields) do
     fields
     |> String.split(",")
     |> Enum.map(&string_to_atom/1)
-    |> Enum.filter(& &1 != nil)
+    |> Enum.filter(&(&1 != nil))
   end
+
   def build_fields_list(_), do: []
 
   # Attempts to convert an arbitrary String.t() into an existing atom. If an
@@ -83,27 +86,33 @@ defmodule Cereal.Utils do
       _ -> nil
     end
   end
+
   defp string_to_atom(atom) when is_atom(atom), do: atom
   defp string_to_atom(_), do: nil
 
   @doc false
   def underscore(""), do: ""
-  def underscore(<<h, t :: binary>>) do
+
+  def underscore(<<h, t::binary>>) do
     <<to_lower_char(h)>> <> do_underscore(t, h)
   end
 
-  defp do_underscore(<<h, t, rest :: binary>>, _) when h in ?A..?Z and not (t in ?A..?Z or t == ?.) do
+  defp do_underscore(<<h, t, rest::binary>>, _) when h in ?A..?Z and not (t in ?A..?Z or t == ?.) do
     <<?_, to_lower_char(h), t>> <> do_underscore(rest, t)
   end
-  defp do_underscore(<<h, t :: binary>>, prev) when h in ?A..?Z and prev not in ?A..?Z do
+
+  defp do_underscore(<<h, t::binary>>, prev) when h in ?A..?Z and prev not in ?A..?Z do
     <<?_, to_lower_char(h)>> <> do_underscore(t, h)
   end
-  defp do_underscore(<<?., t :: binary>>, _) do
+
+  defp do_underscore(<<?., t::binary>>, _) do
     <<?/>> <> underscore(t)
   end
-  defp do_underscore(<<h, t :: binary>>, _) do
+
+  defp do_underscore(<<h, t::binary>>, _) do
     <<to_lower_char(h)>> <> do_underscore(t, h)
   end
+
   defp do_underscore(<<>>, _) do
     <<>>
   end

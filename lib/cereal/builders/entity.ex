@@ -10,7 +10,7 @@ defmodule Cereal.Builders.Entity do
       |> Map.put(:data, entity)
       |> build()
     end)
-    |> Enum.map(fn({:ok, result}) -> result end)
+    |> Enum.map(fn {:ok, result} -> result end)
   end
 
   def build(%{serializer: serializer} = context) do
@@ -23,7 +23,7 @@ defmodule Cereal.Builders.Entity do
       id: serializer.id(context.data, context.conn),
       type: serializer.type(context.data, context.conn),
       attributes: attributes(context),
-      rels: relationships(context),
+      rels: relationships(context)
     }
   end
 
@@ -31,10 +31,12 @@ defmodule Cereal.Builders.Entity do
   # return value to the conn's assigns
   defp do_assigns(%{serializer: serializer, conn: conn, data: data} = context) do
     conn = Map.put_new(conn, :assigns, %{})
+
     conn =
       data
       |> serializer.assigns(conn)
       |> Enum.reduce(conn, &do_assign/2)
+
     %{context | conn: conn}
   end
 
@@ -58,7 +60,7 @@ defmodule Cereal.Builders.Entity do
     relation =
       should_include_relation?(context.opts, name, rel_opts)
       |> case do
-        true  -> relation(context, name, rel_opts)
+        true -> relation(context, name, rel_opts)
         false -> nil
       end
 
@@ -71,6 +73,7 @@ defmodule Cereal.Builders.Entity do
   end
 
   defp build_relation_entity(nil, _, _, _), do: nil
+
   defp build_relation_entity(relation, context, name, rel_opts) do
     context
     |> Map.put(:serializer, rel_opts.serializer)
@@ -81,14 +84,17 @@ defmodule Cereal.Builders.Entity do
 
   defp with_relationship_includes(%{include: includes} = opts, name) when is_list(includes),
     do: %{opts | include: includes[name]}
+
   defp with_relationship_includes(opts, _), do: opts
 
   # We include the option when the following is true:
   # 1) The relation options have `include: true`
   # 2) The `include` option is passed in and includes the resource
   defp should_include_relation?(_, _, %{include: true}), do: true
+
   defp should_include_relation?(%{include: included}, name, _) when is_list(included),
     do: included[name] |> is_list()
+
   defp should_include_relation?(_, _, %{include: false}), do: false
   defp should_include_relation?(_, _, _), do: true
 
@@ -96,15 +102,19 @@ defmodule Cereal.Builders.Entity do
     type = serializer.type(context.data, context.conn) |> String.to_atom()
     do_filter_attributes(attrs, {:take, fields[type]})
   end
+
   defp filter_attributes(attrs, %{serializer: serializer, opts: %{excludes: fields}} = context) when is_list(fields) do
     type = serializer.type(context.data, context.conn) |> String.to_atom()
     do_filter_attributes(attrs, {:drop, fields[type]})
   end
+
   defp filter_attributes(attrs, _), do: attrs
 
   defp do_filter_attributes(attrs, {:take, fields}) when is_list(fields),
     do: Map.take(attrs, fields)
+
   defp do_filter_attributes(attrs, {:drop, fields}) when is_list(fields),
     do: Map.drop(attrs, fields)
+
   defp do_filter_attributes(attrs, _), do: attrs
 end

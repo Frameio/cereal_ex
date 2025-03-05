@@ -28,9 +28,13 @@ defmodule Cereal.Serializer do
       @attributes []
       @relations []
 
-      import Cereal.Serializer, only: [
-        attributes: 1, has_many: 2, has_one: 2, embeds_one: 2
-      ]
+      import Cereal.Serializer,
+        only: [
+          attributes: 1,
+          has_many: 2,
+          has_one: 2,
+          embeds_one: 2
+        ]
 
       unquote(define_default_id())
       unquote(define_default_type(__CALLER__.module))
@@ -46,7 +50,7 @@ defmodule Cereal.Serializer do
 
   defmacro __before_compile__(_env) do
     quote do
-      def __relations,  do: @relations
+      def __relations, do: @relations
       def __attributes, do: @attributes
     end
   end
@@ -54,14 +58,14 @@ defmodule Cereal.Serializer do
   defp define_default_id do
     quote do
       def id(data, _conn), do: Map.get(data, :id)
-      defoverridable [id: 2]
+      defoverridable id: 2
     end
   end
 
   defp define_default_transform do
     quote do
       def transform(data, _), do: data
-      defoverridable [transform: 2]
+      defoverridable transform: 2
     end
   end
 
@@ -71,14 +75,14 @@ defmodule Cereal.Serializer do
     quote do
       def type(), do: unquote(type_for_module)
       def type(_, _), do: type()
-      defoverridable [type: 2]
+      defoverridable type: 2
     end
   end
 
   defp define_default_assigns do
     quote do
       def assigns(_data, _conn), do: %{}
-      defoverridable [assigns: 2]
+      defoverridable assigns: 2
     end
   end
 
@@ -86,10 +90,11 @@ defmodule Cereal.Serializer do
     quote do
       def attributes(struct, conn) do
         __MODULE__.__attributes()
-        |> Enum.map(& {&1, fn struct, conn -> apply(__MODULE__, &1, [struct, conn]) end})
+        |> Enum.map(&{&1, fn struct, conn -> apply(__MODULE__, &1, [struct, conn]) end})
         |> Enum.into(%{})
       end
-      defoverridable [attributes: 2]
+
+      defoverridable attributes: 2
     end
   end
 
@@ -100,14 +105,15 @@ defmodule Cereal.Serializer do
         |> Enum.map(fn {_, name, opts} -> {name, opts} end)
         |> Enum.into(%{})
       end
-      defoverridable [relationships: 2]
+
+      defoverridable relationships: 2
     end
   end
 
   defp define_default_preload do
     quote do
       def preload(data, conn, _include_opts), do: data
-      defoverridable [preload: 3]
+      defoverridable preload: 3
     end
   end
 
@@ -128,9 +134,11 @@ defmodule Cereal.Serializer do
     quote do
       @attributes [unquote(name) | @attributes]
       def unquote(name)(%{unquote(name) => nil}, _), do: nil
+
       def unquote(name)(%{unquote(name) => model}, conn) do
         Cereal.serialize(unquote(serializer), model, conn)
       end
+
       defoverridable [{unquote(name), 2}]
     end
   end
@@ -161,6 +169,7 @@ defmodule Cereal.Serializer do
       def unquote(name)(struct) do
         Cereal.Serializer.get_relationship_data(struct, unquote(name), unquote(opts))
       end
+
       defoverridable [{name, 1}]
     end
   end
@@ -185,6 +194,8 @@ defmodule Cereal.Serializer do
     Keyword.update!(opts, :serializer, &expand_alias(&1, alias_context, env))
   end
 
-  defp expand_alias({:__aliases__, _, _} = ast, alias_context, env), do: Macro.expand(ast, %{env | function: alias_context})
+  defp expand_alias({:__aliases__, _, _} = ast, alias_context, env),
+    do: Macro.expand(ast, %{env | function: alias_context})
+
   defp expand_alias(ast, _alias_context, _env), do: ast
 end
